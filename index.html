@@ -9,10 +9,23 @@
 <body>
     <div id="shopping-list">
         <h1>{{header}}</h1>
-        <input v-model="newItem" type="text" placeholder="Add an item">
-        <label><input v model="newItemPriority" value="low" type=radio>Low</label>
-        <label><input v model="newItemPriority" value="high" type=radio>High</label>
-        <br>
+        <div class="add-item-form">
+        <input 
+        v-model.trim="newItem" 
+        v-on:keyup.enter="items.push({id: items.length +1, label: newItem})" 
+        type="text" 
+        placeholder="Add an item">
+        <label>
+            <input type="checkbox" v-model="NewItemHighPriority">
+        <select v-model="newItemPriority">
+            High Priority
+    </label>
+    <button v-on:click="items.push({id: items.length +1, label: newItem})" 
+    class="btn btn-primary">
+        Save Item
+    </button>
+    </div>
+        
         {{newItem}} {{newItemPriority}}
         <ul>
             <li v-for="item in items" :key="item.id">{{item.label}} </li>
@@ -24,13 +37,13 @@
         const shoppingList = Vue.createApp({
             data(){
                 return {
-                    header: "Shopping List App",
+                    header: 'Shopping List App',
                     newItem:'',
-                    newItemPriority:'low',
+                    newItemHighPriority:false,
                     items: [
-                    {id: 1, label: "10 party hats"},
-                    {id: 2, label: "2 board games"},
-                    {id: 3, label: "20 cups"},
+                    {id: 1, label: '10 party hats'},
+                    {id: 2, label: '2 board games'},
+                    {id: 3, label: '20 cups'},
                     ]
                 }
             }
