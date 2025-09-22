@@ -28,7 +28,6 @@
       </button>
     </div>
 
-    <!-- Add Item Form -->
     <div v-if="editing" class="add-item-form">
       <input
         @keyup.enter="addItem"
@@ -52,7 +51,6 @@
       </button>
     </div>
 
-    <!-- List / Empty State -->
     <div v-else>
       <p v-if="items.length === 0" class="muted">Nice job! You've bought all your items!</p>
 
@@ -71,7 +69,6 @@
     </div>
   </div>
 
-  <!-- Vue 3 CDN -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script>
     const { createApp } = Vue;
@@ -96,7 +93,6 @@
           const label = this.newItem.trim();
           if (!label) return;
 
-          // Add new items to the TOP of the list
           this.items.unshift({
             id: this.nextId++,
             label,
