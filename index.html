@@ -28,7 +28,7 @@
       </button>
     </div>
 
-    <!-- Exactly one of these renders -->
+    <!-- Add Item Form -->
     <div v-if="editing" class="add-item-form">
       <input
         @keyup.enter="addItem"
@@ -52,6 +52,7 @@
       </button>
     </div>
 
+    <!-- List / Empty State -->
     <div v-else>
       <p v-if="items.length === 0" class="muted">Nice job! You've bought all your items!</p>
 
@@ -61,6 +62,7 @@
           :key="item.id"
           @click="togglePurchased(item)"
           :class="{ strikeout: item.purchased, priority: item.highPriority }"
+          title="Click to toggle purchased"
         >
           {{ item.label }}
           <small v-if="item.highPriority">(High)</small>
@@ -94,11 +96,12 @@
           const label = this.newItem.trim();
           if (!label) return;
 
-          this.items.push({
+          // Add new items to the TOP of the list
+          this.items.unshift({
             id: this.nextId++,
             label,
             highPriority: this.newItemHighPriority,
-            purchased: false,            // <-- make sure new items can toggle
+            purchased: false,
           });
 
           this.newItem = '';
@@ -113,7 +116,7 @@
           }
         },
         togglePurchased(item) {
-          item.purchased = !item.purchased;  // <-- correct property name
+          item.purchased = !item.purchased;
         }
       }
     }).mount('#shopping-list');
