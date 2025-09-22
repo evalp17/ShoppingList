@@ -7,35 +7,66 @@
   <link rel="stylesheet" href="main.css">
 </head>
 <body>
-  <div id="shopping-list" class="container">
-    <h1>{{ header }}</h1>
+  <div id="shopping-list">
+    <div class="header">
+      <h1>{{ header }}</h1>
+      <button
+        v-if="editing"
+        @click="doEdit(false)"
+        class="btn btn-cancel"
+        type="button"
+      >
+        Cancel
+      </button>
+      <button
+        v-else
+        @click="doEdit(true)"
+        class="btn btn-primary"
+        type="button"
+      >
+        Add Item
+      </button>
+    </div>
 
-    <div class="add-item-form">
+    <!-- Exactly one of these renders -->
+    <div v-if="editing" class="add-item-form">
       <input
-        v-model.trim="newItem"
         @keyup.enter="addItem"
         type="text"
-        placeholder="Add an item"
-      />
+        v-model.trim="newItem"
+        placeholder="Add an Item"
+      >
 
       <label>
         <input type="checkbox" v-model="newItemHighPriority">
         High Priority
       </label>
 
-      <button @click="addItem" class="btn btn-primary">Save Item</button>
+      <button
+        :disabled="newItem.length === 0"
+        @click="addItem"
+        class="btn btn-primary"
+        type="button"
+      >
+        Save Item
+      </button>
     </div>
 
-    <p>Preview: {{ newItem }} — {{ newItemHighPriority ? 'High' : 'Normal' }}</p>
+    <div v-else>
+      <p v-if="items.length === 0" class="muted">Nice job! You've bought all your items!</p>
 
-    <ul>
-      <li v-for="item in items" :key="item.id">
-        <span :style="{ fontWeight: item.highPriority ? 'bold' : 'normal' }">
+      <ul v-else>
+        <li
+          v-for="item in items"
+          :key="item.id"
+          @click="togglePurchased(item)"
+          :class="{ strikeout: item.purchased, priority: item.highPriority }"
+        >
           {{ item.label }}
-        </span>
-        <small v-if="item.highPriority">(High)</small>
-      </li>
-    </ul>
+          <small v-if="item.highPriority">(High)</small>
+        </li>
+      </ul>
+    </div>
   </div>
 
   <!-- Vue 3 CDN -->
@@ -47,12 +78,13 @@
       data() {
         return {
           header: 'Shopping List App',
+          editing: false,
           newItem: '',
           newItemHighPriority: false,
           items: [
-            { id: 1, label: '10 party hats', highPriority: false },
-            { id: 2, label: '2 board games', highPriority: true },
-            { id: 3, label: '20 cups', highPriority: false },
+            { id: 1, label: '10 party hats', purchased: true,  highPriority: false },
+            { id: 2, label: '2 board games', purchased: true,  highPriority: true  },
+            { id: 3, label: '20 cups',        purchased: false, highPriority: false },
           ],
           nextId: 4,
         };
@@ -61,15 +93,29 @@
         addItem() {
           const label = this.newItem.trim();
           if (!label) return;
+
           this.items.push({
             id: this.nextId++,
             label,
             highPriority: this.newItemHighPriority,
+            purchased: false,            // <-- make sure new items can toggle
           });
+
           this.newItem = '';
           this.newItemHighPriority = false;
+          this.editing = false;
         },
-      },
+        doEdit(editing) {
+          this.editing = editing;
+          if (editing) {
+            this.newItem = '';
+            this.newItemHighPriority = false;
+          }
+        },
+        togglePurchased(item) {
+          item.purchased = !item.purchased;  // <-- correct property name
+        }
+      }
     }).mount('#shopping-list');
   </script>
 </body>
