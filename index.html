@@ -1,59 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping List App</title>
-    <link rel="stylesheet" href="main.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shopping List App</title>
+  <link rel="stylesheet" href="main.css">
 </head>
-
 <body>
+  <div id="shopping-list" class="container">
+    <h1>{{ header }}</h1>
 
-const newItem =ref("")
-const newItemHighPriority = ref(false)
-</script>
-<template>
-        <h1>{{header}}</h1>
-        <div class="add-item-form">
-        <input 
-        v-model.trim="newItem" 
-        v-on:keyup.enter="items.push({id: items.length +1, label: newItem})" 
-        type="text" 
-        placeholder="Add an item">
-        <label>
-            <input type="checkbox" v-model="NewItemHighPriority">
-        <select v-model="newItemPriority">
-            High Priority
-    </label>
-    <button v-on:click="items.push({id: items.length +1, label: newItem})" 
-    class="btn btn-primary">
-        Save Item
-    </button>
+    <div class="add-item-form">
+      <input
+        v-model.trim="newItem"
+        @keyup.enter="addItem"
+        type="text"
+        placeholder="Add an item"
+      />
+
+      <label>
+        <input type="checkbox" v-model="newItemHighPriority">
+        High Priority
+      </label>
+
+      <button @click="addItem" class="btn btn-primary">Save Item</button>
     </div>
-        
-        {{newItem}} {{newItemPriority}}
-        <ul>
-            <li v-for="item in items" :key="item.id">{{item.label}} </li>
-           
-        </ul>
-    </div>
-    <script src="https://unpkg.com/vue@3"></script>
-    <script>
-        const shoppingList = Vue.createApp({
-            data(){
-                return {
-                    header: 'Shopping List App',
-                    newItem:'',
-                    newItemHighPriority:false,
-                    items: [
-                    {id: 1, label: '10 party hats'},
-                    {id: 2, label: '2 board games'},
-                    {id: 3, label: '20 cups'},
-                    ]
-                }
-            }
-        }).mount('#shopping-list')
-    </script>
-    
+
+    <p>Preview: {{ newItem }} — {{ newItemHighPriority ? 'High' : 'Normal' }}</p>
+
+    <ul>
+      <li v-for="item in items" :key="item.id">
+        <span :style="{ fontWeight: item.highPriority ? 'bold' : 'normal' }">
+          {{ item.label }}
+        </span>
+        <small v-if="item.highPriority">(High)</small>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          header: 'Shopping List App',
+          newItem: '',
+          newItemHighPriority: false,
+          items: [
+            { id: 1, label: '10 party hats', highPriority: false },
+            { id: 2, label: '2 board games', highPriority: true },
+            { id: 3, label: '20 cups', highPriority: false },
+          ],
+          nextId: 4,
+        };
+      },
+      methods: {
+        addItem() {
+          const label = this.newItem.trim();
+          if (!label) return;
+          this.items.push({
+            id: this.nextId++,
+            label,
+            highPriority: this.newItemHighPriority,
+          });
+          this.newItem = '';
+          this.newItemHighPriority = false;
+        },
+      },
+    }).mount('#shopping-list');
+  </script>
 </body>
 </html>
